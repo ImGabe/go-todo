@@ -1,2 +1,2 @@
-todo*
-*.sql
+**/*.db
+.vscode
