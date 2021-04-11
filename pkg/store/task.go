@@ -7,10 +7,12 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// TaskStore is responsible for all database actions related to tasks
 type TaskStore struct {
 	DB *sqlx.DB
 }
 
+// Insert inserts a new task on the database
 func (s TaskStore) Insert(task models.Task) (models.Task, error) {
 	insertStmt := `
 		INSERT INTO task (description, done)
@@ -39,6 +41,7 @@ func (s TaskStore) Insert(task models.Task) (models.Task, error) {
 	return received, nil
 }
 
+// Update updates an existent task on the database
 func (s TaskStore) Update(task models.Task) (models.Task, error) {
 	stmt := `
 		UPDATE task
@@ -73,13 +76,14 @@ func (s TaskStore) Update(task models.Task) (models.Task, error) {
 	return received, nil
 }
 
-func (s TaskStore) Delete(task models.Task) error {
+// Delete deletes a task on the database
+func (s TaskStore) Delete(taskID int64) error {
 	stmt := `
 		DELETE FROM task
-		WHERE id = :id
+		WHERE id = $1
 	`
 
-	result, err := s.DB.NamedExec(stmt, &task)
+	result, err := s.DB.Exec(stmt, &taskID)
 	if err != nil {
 		return err
 	}
@@ -92,6 +96,7 @@ func (s TaskStore) Delete(task models.Task) error {
 	return nil
 }
 
+// Select retrieves a task from the database
 func (s TaskStore) Select(task models.Task) (models.Task, error) {
 	stmt := `
 		SELECT *
@@ -106,4 +111,17 @@ func (s TaskStore) Select(task models.Task) (models.Task, error) {
 	}
 
 	return received, err
+}
+
+// SelectAll retrieves all tasks from the database
+func (s TaskStore) SelectAll(done bool) ([]models.Task, error) {
+	stmt := `SELECT * FROM task`
+
+	var tasks []models.Task
+	err := s.DB.Select(&tasks, stmt)
+	if err != nil {
+		return nil, err
+	}
+
+	return tasks, nil
 }

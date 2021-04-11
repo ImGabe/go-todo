@@ -99,7 +99,7 @@ func TestTaskStore_Update(t *testing.T) {
 func TestTaskStore_Delete(t *testing.T) {
 	type testCase struct {
 		insert models.Task
-		delete models.Task
+		delete int64
 	}
 
 	tests := []struct {
@@ -114,7 +114,7 @@ func TestTaskStore_Delete(t *testing.T) {
 			store: store.TaskStore{app.OpenDatabase(databasePath)},
 			args: testCase{
 				insert: models.Task{Description: "Inserted Task", Done: false},
-				delete: models.Task{ID: 1, Description: "Delete Task", Done: true},
+				delete: 1,
 			},
 			want:    nil,
 			wantErr: false,
@@ -124,7 +124,7 @@ func TestTaskStore_Delete(t *testing.T) {
 			store: store.TaskStore{app.OpenDatabase(databasePath)},
 			args: testCase{
 				insert: models.Task{Description: "Inserted Task", Done: false},
-				delete: models.Task{ID: 2, Description: "Delete Task", Done: true},
+				delete: 2,
 			},
 			want:    sql.ErrNoRows,
 			wantErr: false,
