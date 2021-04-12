@@ -61,6 +61,25 @@ func ListTasks(c *cli.Context) error {
 	return nil
 }
 
+// Checktask is responsible for the 'check' command on the CLI
+func CheckTask(c *cli.Context) error {
+	ts := c.Context.Value(TaskStoreContextKey).(store.TaskStore)
+
+	tmp := c.Args().First()
+	taskID, err := strconv.Atoi(tmp)
+	if err != nil {
+		return err
+	}
+
+	err = ts.Check(int64(taskID))
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("task (%d) successfully check\n", taskID)
+	return nil
+}
+
 // RemoveTask is responsible for the 'remove' command on the CLI
 func RemoveTask(c *cli.Context) error {
 	ts := c.Context.Value(TaskStoreContextKey).(store.TaskStore)

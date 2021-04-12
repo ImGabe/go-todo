@@ -125,3 +125,24 @@ func (s TaskStore) SelectAll(done bool) ([]models.Task, error) {
 
 	return tasks, nil
 }
+
+// Check checks a task on the database
+func (s TaskStore) Check(taskID int64) error {
+	stmt := `
+	UPDATE task
+	SET done = True
+	WHERE id = :id
+	`
+
+	result, err := s.DB.Exec(stmt, &taskID)
+	if err != nil {
+		return err
+	}
+
+	affected, _ := result.RowsAffected()
+	if affected == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
+}

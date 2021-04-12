@@ -74,6 +74,11 @@ func openCliApp() *cli.App {
 				Action: commandLine.AddTask,
 			},
 			{
+				Name:   "check",
+				Usage:  "check a task by ID",
+				Action: commandLine.CheckTask,
+			},
+			{
 				Name:   "list",
 				Usage:  "lists all tasks",
 				Action: commandLine.ListTasks,
