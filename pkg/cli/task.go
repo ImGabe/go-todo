@@ -87,6 +87,25 @@ func EditTask(c *cli.Context) error {
 
 // ShowTask is responsible for the 'show' command on the CLI
 func ShowTask(c *cli.Context) error {
+	ts := c.Context.Value(TaskStoreContextKey).(store.TaskStore)
+
+	tmp := c.Args().First()
+	taskID, err := strconv.Atoi(tmp)
+	if err != nil {
+		return err
+	}
+
+	task, err := ts.Select(models.Task{ID: int64(taskID)})
+	if err != nil {
+		return err
+	}
+
+	check := ""
+	if task.Done {
+		check = "X"
+	}
+
+	fmt.Printf("(%d) - [%s] %s\n", task.ID, check, task.Description)
 	return nil
 }
 
