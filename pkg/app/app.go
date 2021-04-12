@@ -85,7 +85,7 @@ func openCliApp() *cli.App {
 			},
 			{
 				Name:   "remove",
-				Usage:  "remove  all tasks",
+				Usage:  "remove all tasks",
 				Action: commandLine.RemoveTask,
 			},
 			{
