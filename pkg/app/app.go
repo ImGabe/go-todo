@@ -13,7 +13,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func openDatabase(path string) *sqlx.DB {
+func OpenDatabase(path string) *sqlx.DB {
 	db, err := sqlx.Open("sqlite3", path)
 	if err != nil {
 		log.Fatalf("error opening database: %s", err)
@@ -52,7 +52,7 @@ func openCliApp() *cli.App {
 		},
 		Before: func(c *cli.Context) error {
 			file := c.String(string(commandLine.FileFlagKey))
-			db := openDatabase(file)
+			db := OpenDatabase(file)
 			if err := db.Ping(); err != nil {
 				return err
 			}
