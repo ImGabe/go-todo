@@ -30,7 +30,7 @@ func openCliApp() *cli.App {
 		Usage: "keeps track of todos",
 		Authors: []*cli.Author{
 			{
-				Name:  "Vicor Freire",
+				Name:  "Victor Freire",
 				Email: "victor@freire.dev.br",
 			},
 			{
