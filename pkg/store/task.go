@@ -115,10 +115,15 @@ func (s TaskStore) Select(task models.Task) (models.Task, error) {
 
 // SelectAll retrieves all tasks from the database
 func (s TaskStore) SelectAll(done bool) ([]models.Task, error) {
-	stmt := `SELECT * FROM task`
+	stmt := `
+		SELECT *
+		FROM task
+		WHERE done = false OR done = :done
+	`
 
 	var tasks []models.Task
-	err := s.DB.Select(&tasks, stmt)
+
+	err := s.DB.Select(&tasks, stmt, done)
 	if err != nil {
 		return nil, err
 	}
