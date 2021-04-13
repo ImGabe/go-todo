@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 
 	"github.com/imgabe/todo/pkg/models"
@@ -49,13 +50,21 @@ func ListTasks(c *cli.Context) error {
 		return err
 	}
 
+	max := 1
 	for _, task := range tasks {
-		check := ""
+		if taskID := int(task.ID); taskID > max {
+			max = taskID
+		}
+	}
+	width := 1 + int(math.Log10(float64(max)))
+
+	for _, task := range tasks {
+		check := " "
 		if task.Done {
-			check = "X"
+			check = "*"
 		}
 
-		fmt.Printf("(%d) - [%s] %s\n", task.ID, check, task.Description)
+		fmt.Printf("%-*d %s %s\n", width, task.ID, check, task.Description)
 	}
 
 	return nil
@@ -119,12 +128,12 @@ func ShowTask(c *cli.Context) error {
 		return err
 	}
 
-	check := ""
+	check := " "
 	if task.Done {
-		check = "X"
+		check = "*"
 	}
 
-	fmt.Printf("(%d) - [%s] %s\n", task.ID, check, task.Description)
+	fmt.Printf("%d %s %s\n", task.ID, check, task.Description)
 	return nil
 }
 
