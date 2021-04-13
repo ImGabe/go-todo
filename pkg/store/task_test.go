@@ -203,3 +203,53 @@ func TestTaskStore_Select(t *testing.T) {
 		})
 	}
 }
+
+func TestTaskStore_Check(t *testing.T) {
+	type testCase struct {
+		insert models.Task
+		taskID int64
+	}
+
+	tests := []struct {
+		name    string
+		store   store.TaskStore
+		args    testCase
+		want    models.Task
+		wantErr bool
+	}{
+		{
+			name:  "Check a task",
+			store: store.TaskStore{app.OpenDatabase(databasePath)},
+			args: testCase{
+				insert: models.Task{Description: "Inserted Task", Done: false},
+				taskID: 1,
+			},
+			want:    models.Task{ID: 1, Description: "Inserted Task", Done: true},
+			wantErr: false,
+		},
+		{
+			name:  "Check a non-existent task",
+			store: store.TaskStore{app.OpenDatabase(databasePath)},
+			args: testCase{
+				insert: models.Task{Description: "Inserted Task", Done: false},
+				taskID: 2,
+			},
+			want:    models.Task{ID: 0, Description: "", Done: false},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := tt.store.Insert(tt.args.insert)
+			if err != nil {
+				t.Errorf("TaskStore.Insert() error = %+v, wantErr %+v", err, tt.wantErr)
+				return
+			}
+
+			if err := tt.store.Check(tt.args.taskID); (err != nil) != tt.wantErr {
+				t.Errorf("TaskStore.Check() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
