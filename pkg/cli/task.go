@@ -59,12 +59,7 @@ func ListTasks(c *cli.Context) error {
 	width := 1 + int(math.Log10(float64(max)))
 
 	for _, task := range tasks {
-		check := " "
-		if task.Done {
-			check = "*"
-		}
-
-		fmt.Printf("%-*d %s %s\n", width, task.ID, check, task.Description)
+		fmt.Printf("%-*d %s %s\n", width, task.ID, check(task.Done), task.Description)
 	}
 
 	return nil
@@ -128,13 +123,15 @@ func ShowTask(c *cli.Context) error {
 		return err
 	}
 
-	check := " "
-	if task.Done {
-		check = "*"
-	}
-
-	fmt.Printf("%d %s %s\n", task.ID, check, task.Description)
+	fmt.Printf("%d %s %s\n", task.ID, check(task.Done), task.Description)
 	return nil
+}
+
+func check(done bool) string {
+	if done {
+		return "*"
+	}
+	return " "
 }
 
 // Webserver is responsible for the 'web' command on the CLI
