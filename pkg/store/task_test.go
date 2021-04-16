@@ -253,3 +253,68 @@ func TestTaskStore_Check(t *testing.T) {
 		})
 	}
 }
+
+func TestTaskStore_SelectAll(t *testing.T) {
+	type testCase struct {
+		insert models.Task
+		done   bool
+	}
+
+	tests := []struct {
+		name    string
+		store   store.TaskStore
+		args    testCase
+		want    []models.Task
+		wantErr bool
+	}{
+		{
+			name:  "Empty list",
+			store: store.TaskStore{app.OpenDatabase(databasePath)},
+			args: testCase{
+				insert: models.Task{},
+				done:   false,
+			},
+			want:    []models.Task{{ID: 1, Done: false}},
+			wantErr: false,
+		},
+		{
+			name:  "List one task",
+			store: store.TaskStore{app.OpenDatabase(databasePath)},
+			args: testCase{
+				insert: models.Task{Description: "Inserted Task", Done: false},
+				done:   false,
+			},
+			want:    []models.Task{{ID: 1, Description: "Inserted Task", Done: false}},
+			wantErr: false,
+		},
+		{
+			name:  "List task with one check",
+			store: store.TaskStore{app.OpenDatabase(databasePath)},
+			args: testCase{
+				insert: models.Task{Description: "Inserted Task", Done: true},
+				done:   true,
+			},
+			want:    []models.Task{{ID: 1, Description: "Inserted Task", Done: true}},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := tt.store.Insert(tt.args.insert)
+			if err != nil {
+				t.Errorf("TaskStore.Insert() error = %+v, wantErr %+v", err, tt.wantErr)
+				return
+			}
+
+			got, err := tt.store.SelectAll(tt.args.done)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("TaskStore.SelectAll() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("TaskStore.SelectAll() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
