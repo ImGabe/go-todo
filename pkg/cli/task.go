@@ -105,6 +105,34 @@ func RemoveTask(c *cli.Context) error {
 
 // EditTask is responsible for the 'edit' command on the CLI
 func EditTask(c *cli.Context) error {
+	ts := c.Context.Value(TaskStoreContextKey).(store.TaskStore)
+
+	tmp := c.Args().Get(0)
+	taskID, err := strconv.Atoi(tmp)
+	if err != nil {
+		fmt.Println("Missing ID field")
+		return err
+	}
+
+	taskDescription := c.Args().Get(1)
+	if len(taskDescription) == 0 {
+		fmt.Println("Missing description field")
+		return nil
+	}
+
+	tmp = c.Args().Get(2)
+	taskDone, err := strconv.ParseBool(tmp)
+	if err != nil {
+		fmt.Println("Missing done field")
+		return err
+	}
+
+	newTask, err := ts.Update(models.Task{ID: int64(taskID), Description: taskDescription, Done: taskDone})
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("task (%d) successfully edited\n", newTask.ID)
 	return nil
 }
 
