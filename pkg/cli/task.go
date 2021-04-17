@@ -107,10 +107,9 @@ func RemoveTask(c *cli.Context) error {
 func EditTask(c *cli.Context) error {
 	ts := c.Context.Value(TaskStoreContextKey).(store.TaskStore)
 
-	tmp := c.Args().Get(0)
-	taskID, err := strconv.Atoi(tmp)
+	taskID, err := strconv.ParseInt(c.Args().Get(0), 10, 64)
 	if err != nil {
-		fmt.Println("Missing ID field")
+		fmt.Println("Missing ID field or is not a number")
 		return err
 	}
 
@@ -120,7 +119,7 @@ func EditTask(c *cli.Context) error {
 		return nil
 	}
 
-	tmp = c.Args().Get(2)
+	tmp := c.Args().Get(2)
 	taskDone, err := strconv.ParseBool(tmp)
 	if err != nil {
 		fmt.Println("Missing done field")
@@ -139,6 +138,7 @@ func EditTask(c *cli.Context) error {
 // ShowTask is responsible for the 'show' command on the CLI
 func ShowTask(c *cli.Context) error {
 	ts := c.Context.Value(TaskStoreContextKey).(store.TaskStore)
+	taskID, err := strconv.ParseInt(c.Args().First(), 10, 64)
 
 	tmp := c.Args().First()
 	taskID, err := strconv.Atoi(tmp)
@@ -146,7 +146,7 @@ func ShowTask(c *cli.Context) error {
 		return err
 	}
 
-	task, err := ts.Select(models.Task{ID: int64(taskID)})
+	task, err := ts.Select(models.Task{ID: taskID})
 	if err != nil {
 		return err
 	}
