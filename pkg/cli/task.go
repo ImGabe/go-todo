@@ -19,7 +19,7 @@ type ContextKey string
 var (
 	// TaskStoreContextKey is the context key used to store the task store
 	TaskStoreContextKey ContextKey = "taskstore"
-	// TaskStoreContextKey is the context key used to store the database
+	// DatabaseContextKey is the context key used to store the database
 	DatabaseContextKey ContextKey = "db"
 	// FileFlagKey is the flag key used to store the database file path
 	FileFlagKey FlagKey = "file"
