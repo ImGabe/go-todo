@@ -1,2 +1,6 @@
 **/*.db
 .vscode
+
+database
+main.exe
+main
