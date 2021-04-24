@@ -2,9 +2,11 @@ package cli
 
 import (
 	"fmt"
+	"log"
 	"math"
 	"strconv"
 
+	"github.com/imgabe/todo/pkg/api/web"
 	"github.com/imgabe/todo/pkg/models"
 	"github.com/imgabe/todo/pkg/store"
 	"github.com/urfave/cli/v2"
@@ -140,8 +142,6 @@ func ShowTask(c *cli.Context) error {
 	ts := c.Context.Value(TaskStoreContextKey).(store.TaskStore)
 	taskID, err := strconv.ParseInt(c.Args().First(), 10, 64)
 
-	tmp := c.Args().First()
-	taskID, err := strconv.Atoi(tmp)
 	if err != nil {
 		return err
 	}
@@ -155,14 +155,21 @@ func ShowTask(c *cli.Context) error {
 	return nil
 }
 
+// Webserver is responsible for the 'web' command on the CLI
+func Webserver(c *cli.Context) error {
+	port := c.Args().First()
+
+	router := web.NewRouter()
+	server := web.NewServer(port, router)
+
+	log.Printf("Running web server on address http://%s", server.Addr)
+	log.Fatal(server.ListenAndServe())
+	return nil
+}
+
 func check(done bool) string {
 	if done {
 		return "*"
 	}
 	return " "
-}
-
-// Webserver is responsible for the 'web' command on the CLI
-func Webserver(c *cli.Context) error {
-	return nil
 }
