@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"os/user"
 
 	commandLine "github.com/imgabe/todo/pkg/cli"
 	"github.com/imgabe/todo/pkg/store"
@@ -12,6 +13,15 @@ import (
 
 	"github.com/urfave/cli/v2"
 )
+
+func DBPath() string {
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+
+	return user.HomeDir + string(os.PathSeparator) + "database.todo"
+}
 
 func OpenDatabase(path string) *sqlx.DB {
 	db, err := sqlx.Open("sqlite3", path)
@@ -41,7 +51,7 @@ func openCliApp() *cli.App {
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  string(commandLine.FileFlagKey),
-				Value: ":memory:",
+				Value: DBPath(),
 				Usage: "database file",
 			},
 			&cli.BoolFlag{

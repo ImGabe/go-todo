@@ -4,6 +4,8 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
+	"os/user"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
@@ -30,7 +32,8 @@ var (
 )
 
 func init() {
-	db := OpenDatabase("database")
+	path := dbPath()
+	db := OpenDatabase(path)
 	if err := db.Ping(); err != nil {
 		log.Fatal(err)
 	}
@@ -38,6 +41,15 @@ func init() {
 	ctx = context.WithValue(context.Background(), DatabaseContextKey, db)
 	ts := store.TaskStore{DB: db}
 	ctx = context.WithValue(context.Background(), TaskStoreContextKey, ts)
+}
+
+func dbPath() string {
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+
+	return user.HomeDir + string(os.PathSeparator) + "database.todo"
 }
 
 func OpenDatabase(path string) *sqlx.DB {
